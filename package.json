@@ -4,7 +4,10 @@
   "description": "My solution to the hanoi tower problem",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npm-run-all -p gulp-watch serve",
+    "gulp-watch": "gulp watch",
+    "serve": "nodemon ./app.js",
+    "test": "mocha --timeout 10000 --exit"
   },
   "repository": {
     "type": "git",
