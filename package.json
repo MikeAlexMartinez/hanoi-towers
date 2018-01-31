@@ -1,0 +1,39 @@
+{
+  "name": "hanoi-towers",
+  "version": "1.0.0",
+  "description": "My solution to the hanoi tower problem",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MikeAlexMartinez/hanoi-towers.git"
+  },
+  "author": "Michael Martinez",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MikeAlexMartinez/hanoi-towers/issues"
+  },
+  "homepage": "https://github.com/MikeAlexMartinez/hanoi-towers#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "gulp": "^3.9.1",
+    "gulp-browserify": "^0.5.1",
+    "gulp-include": "^2.3.1",
+    "gulp-sass": "^3.1.0",
+    "gulp-sourcemaps": "^2.6.1",
+    "gulp-uglify": "^3.0.0",
+    "gulp-util": "^3.0.8",
+    "jshint": "^2.9.5",
+    "npm-run-all": "^4.1.2",
+    "mocha": "^4.1.0"
+  },
+  "dependencies": {
+    "express": "^4.16.2",
+    "ionicons": "^3.0.0",
+    "jquery": "^3.3.1",
+    "normalize.css": "^7.0.0",
+    "pug": "^2.0.0-rc.4"
+  }
+}
