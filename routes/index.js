@@ -7,9 +7,6 @@ const router = express.Router();
 // Application data
 const routes = require('./project-routes/hanoi-towers');
 
-// api routes
-router.use('/api', require('./api'));
-
 routes.forEach(({method, route, fn}) => {
   router[method](route, fn);
 });
