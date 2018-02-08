@@ -10368,5 +10368,4 @@ return jQuery;
 $(document).ready(() => {
   console.log('Testing');
 
-
 });

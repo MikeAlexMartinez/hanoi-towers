@@ -1,8 +1,16 @@
 extends ./layout.pug
 
 block content
+  div.controls
+    div.blocks 
+      input(id='blockCount' type='text' placeholder='4' value='4')
   div.solverContainer
     div.board
+      div.base
+      div#stickOne.stick
+      div#stickTwo.stick
+      div#stickThree.stick
+      div.block
 
 block js
   script(src="/my-projects/hanoi-towers/js/main.js")
