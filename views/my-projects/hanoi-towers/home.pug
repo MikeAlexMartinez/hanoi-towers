@@ -2,8 +2,22 @@ extends ./layout.pug
 
 block content
   div.controls
-    div.blocks 
-      input(id='blockCount' type='text' placeholder='4' value='4')
+    div.form-group.inputs
+      label Blocks
+      input(id='blockCount' class='textInput' type='text' placeholder='4' value='4')
+    div.form-group.inputs
+      label Start
+      input(id='startStack' class='textInput' type='text' placeholder='L' value='L')
+    div.form-group.inputs
+      label Target
+      input(id='targetStack' class='textInput' type='text' placeholder='R' value='R')
+    div.form-group.boxes
+      label Transitions
+      input(type='checkbox' id='transitions' value='true')
+    div.form-group.buttons
+      button.btn#start Start
+      button.btn#pause Pause
+      button.btn#reset Reset
   div.solverContainer
     div.board
       div.base

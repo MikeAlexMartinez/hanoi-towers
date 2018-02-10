@@ -12,7 +12,7 @@ $board_color: #ECC48F;
   background-color: $board_color;
 
   position: absolute;
-  top:0;
+  top: 100px;
   bottom: 0;
   left: 0;
   right: 0;
@@ -27,7 +27,7 @@ $board_color: #ECC48F;
 
   .base {
     position: absolute;
-    bottom: 10%;
+    bottom: 5%;
     left: 5%;
     width: 90%;
     height: 10%;
@@ -79,4 +79,45 @@ $board_color: #ECC48F;
   }
 }
 
+.controls {
+  width: 1000px;
+  height: 80px;
+  background-color: $board_color;
+
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+
+  margin: auto;
+
+  padding: 20px;
+
+  font-size: 25px;
+  text-align: center;
+
+  .form-group {
+    display: inline-block;
+    margin: 0 20px;
+
+    .textInput {
+      padding: 2.5px;
+      width: 30px;
+    }
+
+    .btn {
+      margin-right: 10px; 
+    }
+
+    input {
+      margin-left: 10px;
+    }
+
+    #transitions {
+      height: 30px;
+      width: 30px;
+      vertical-align: bottom;
+    }
+  }
+}
 
