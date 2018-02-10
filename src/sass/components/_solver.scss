@@ -39,7 +39,7 @@ $board_color: #ECC48F;
     position: absolute;
     height: 65%;
     width: 3%;
-    top: 25%;
+    bottom: 10%;
     border-radius: 10px;
     background-color: $tower_color;
   }
@@ -61,7 +61,7 @@ $board_color: #ECC48F;
   border-radius: 30% 20%;
   width: 28%;
   height: 5%;
-  bottom: 21%;
+  bottom: 16%;
   left: 7%;
 
   transition: all 1s linear;
