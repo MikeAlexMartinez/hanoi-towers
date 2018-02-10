@@ -53,4 +53,53 @@ display that is split in to two sections. A section for settings and controls, a
     - Reset - (Type: Button) This button will stop the sequence and recontruct the display so that the disk are stacked according to the options set in the text inputs, before any moves had been made.
 
 2. The Display
+  
+    The display will diplay the hanoi towers which consists of a single base at the bottom of the display and the three towers.
 
+    There will also be the disks which will initially have the default of 5
+    disks present but if the 'Disks' input field is changed, and the solver
+    hasn't started yet, the disks will be rerendered. If the solver is active the disks will be rerendered when the reset button is pressed.
+    The disks will be generated with random colors. The largest disk will have a width that is 28% of the display container width.
+
+    There will be three informational items in the display. 
+      1. One item displaying the minimum number of moves needed to solve the puzzle.
+      2. One item displaying the number of moves taken so far.
+      3. Lastly, One item displaying the number of remaining moves.
+
+## My Hanoi Solver Alogrithm
+# \##### SPOILER ALERT \######
+Don't read on if you want to solve this puzzle yourself.
+<br>
+<br>
+<br>
+<br>Spoiler starts soon...
+<br>
+<br>
+<br>
+<br>
+<br>(No turning back now)<br><br>
+To begin the only available disk to move is the top disk of the start tower.
+The first move is dependent on the number of disks being used. 
+If the number of disks is even then you should place the first disk on the 
+spare tower. If the number of disks is odd you should place the first disk 
+on the target tower.
+
+Once you have made the first move the sequence changes. 
+
+You never move the same disk in two consecuive moves. by moving the same 
+disc twice, you would either be moving the disk back to where it was 
+previously, which would mean you have wasted two moves, or you move the 
+disk to the other tower, which means you either made the wrong move in the 
+previous turn, or are making the wrong move now.
+
+You also move the smallest disc every other move.
+
+After you've moved the smallest disc to a tower, you are left with two situations: Either both towers have discs or just one has.
+
+If both towers have discs then there will only be one which you can validly move, which will be to move the smaller of the two movable discs on top of the larger disc.
+
+If only one of the two towers has a disc, then the only available move is to move that disc to the empty tower.
+
+With the exception of the first move, each time you move the first disc, you will move the disk on top of the next even numbered disc. If no even numbered disc is available, move the disk into the empty tower.
+
+Repeat until the tiles are all stacked on top of the target tower.

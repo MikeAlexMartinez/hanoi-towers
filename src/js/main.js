@@ -17,9 +17,15 @@ function HanoiSolver(disks) {
 function Stack() {
   this.height = 0;
   this.pile = [];
+  this.diskSequence = undefined;
+  this.canUse = false;
   this.shift = shift;
   this.unshift = unshift;
   this.validate = validate;
+
+  function setDiskSequence() {
+    
+  }
 
   function validate(disk) {
 
