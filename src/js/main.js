@@ -42,6 +42,7 @@ function HanoiSolver(target, start, spare, disks) {
 
     for(let i = 1; i <= this.disks; i++ ) {
       let diskWidth = width - ((i - 1) * widthDiff);
+      
       let bottom = base + ((i-1) * heightDiff);
       let diskLeft = left - (diskWidth / 2);
       startStack.unshift(new Disk(diskLeft, bottom, diskWidth, heightDiff, i));
