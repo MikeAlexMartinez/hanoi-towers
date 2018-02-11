@@ -60,35 +60,31 @@ function HanoiSolver(target, start, spare, disks) {
 }
 
 function Stack(position) {
-  this.left = measureLeft.position;
-  this.height = 15;
-  this.oddOrEven = null;
-  this.position = position;
-  this.pile = [];
-  this.canUse = false;
-  this.shift = shift;
-  this.unshift = unshift;
-  this.changeHeight = changeHeight;
-
-  function changeHeight(height) {
-    this.height += height;
-  }
-
-  function shift() {
-    const disk = this.pile.shift(disk);
-    this.height--;
-    this.oddOrEven = this.pile[0].oddOrEven;
-
-    return disk;
-  }
-
-  function unshift(disk) {
-    this.pile.unshift(disk);
-    this.height++;
-    this.oddOrEven = disk.oddOrEven;
-
-    return this;
-  }
+  return {
+    left: measureLeft.position,
+    height: 15,
+    oddOrEven: null,
+    position: position,
+    pile: [],
+    canUse: false,
+    shift: function() {
+      const disk = this.pile.shift();
+      this.height--;
+      this.oddOrEven = this.pile[0].oddOrEven;
+      
+      return disk;
+    },
+    unshift: function(disk) {
+      this.pile.unshift(disk);
+      this.height++;
+      this.oddOrEven = disk.oddOrEven;
+      
+      return this;
+    },
+    changeHeight: function (height) {
+      this.height += height;
+    }
+  };
 }
 
 function Disk(left, bottom, width, height, n) {
