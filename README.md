@@ -86,7 +86,7 @@ on the target tower.
 
 Once you have made the first move the sequence changes. 
 
-You never move the same disk in two consecuive moves. by moving the same 
+You never move the same disk in two consecutive moves. by moving the same 
 disc twice, you would either be moving the disk back to where it was 
 previously, which would mean you have wasted two moves, or you move the 
 disk to the other tower, which means you either made the wrong move in the 
