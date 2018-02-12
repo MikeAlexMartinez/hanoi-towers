@@ -1,5 +1,21 @@
+// Checkbox styling inspired : https://paulund.co.uk/style-checkboxes-with-css
+
 $tower_color: #665F56;
 $board_color: #e6eaf2;
+$main-font: Arial, Helvetica, sans-serif;
+$main-font-weight: 400;
+
+.whiteOnBlack {
+  background-color: #100E0E;
+  color: #fff;
+}
+
+.inputStyle {
+  @extend .whiteOnBlack;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+}
 
 .body {
   width: 100vh;
@@ -7,12 +23,13 @@ $board_color: #e6eaf2;
 }
 
 .solverContainer {
+  font-family: $main-font;
   width: 1000px;
   height: 700px;
   background-color: $board_color;
 
   position: absolute;
-  top: 100px;
+  top: 50px;
   bottom: 0;
   left: 0;
   right: 0;
@@ -26,6 +43,20 @@ $board_color: #e6eaf2;
   width: 100%;
   box-shadow: 3px 3px 6px 0 rgba(0,0,0,0.2);
 
+  .score {
+    font-size: 20px;
+    font-weight: $main-font-weight;
+    text-align: right;
+    position: absolute;
+    top: 5%;
+    right: 5%;
+
+    .scoreItem {
+      display: inline-block;
+      margin-left: 20px;
+    }
+  }
+
   .base {
     position: absolute;
     bottom: 5%;
@@ -34,6 +65,7 @@ $board_color: #e6eaf2;
     height: 10%;
     border-radius: 10px;
     background-color: $tower_color;
+    box-shadow: 0px 3px 6px 2px rgba(0,0,0,0.2);
   }
 
   .stick {
@@ -67,12 +99,17 @@ $board_color: #e6eaf2;
 }
 
 .controls {
+  font-size: 25px;
+  font-family: $main-font;
+  font-weight: $main-font-weight;
+  
   width: 1000px;
   height: 80px;
   background-color: $board_color;
+  box-shadow: 3px 3px 6px 0 rgba(0,0,0,0.2);
 
   position: absolute;
-  top: 10px;
+  top: 30px;
   left: 0;
   right: 0;
 
@@ -80,7 +117,6 @@ $board_color: #e6eaf2;
 
   padding: 20px;
 
-  font-size: 25px;
   text-align: center;
 
   .form-group {
@@ -89,18 +125,85 @@ $board_color: #e6eaf2;
 
     .textInput {
       padding: 2.5px;
-      width: 30px;
+      width: 45px;
+      text-align: center;
+      @extend .inputStyle;
     }
 
     .btn {
+      font-size: 20px;
       margin-right: 10px; 
+      @extend .inputStyle;
     }
 
-    input {
-      margin-left: 10px;
+    input[type=checkbox] {
+      visibility: hidden;
+    }
+
+    .boxes {
+      width: 120px;
+      height: 40px;
+      background: #333;
+    
+      border-radius: 50px;
+      position: relative;
+    }
+
+    /**
+    * Create the text for the On position
+    */
+    .boxes:before {
+      content: 'On';
+      position: absolute;
+      top: 12px;
+      left: 13px;
+      height: 2px;
+      color: #26ca28;
+      font-size: 16px;
+    }
+
+    /**
+    * Create the label for the off position
+    */
+    .boxes:after {
+      content: 'Off';
+      position: absolute;
+      top: 12px;
+      left: 84px;
+      height: 2px;
+      color: #111;
+      font-size: 16px;
+    }
+
+    /**
+    * Create the pill to click
+    */
+    .boxes label {
+      display: block;
+      width: 52px;
+      height: 22px;
+      border-radius: 50px;
+
+      transition: all .5s ease;
+      cursor: pointer;
+      position: absolute;
+      top: 9px;
+      z-index: 1;
+      left: 12px;
+      background: #ddd;
+    }
+
+    /**
+    * Create the checkbox event for the label
+    */
+    .boxes input[type=checkbox]:checked + label {
+      left: 60px;
+      background: #26ca28;
     }
 
     #transitions {
+      @extend .whiteOnBlack;
+
       height: 30px;
       width: 30px;
       vertical-align: bottom;

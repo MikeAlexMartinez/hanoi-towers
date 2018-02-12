@@ -10365,57 +10365,182 @@ return jQuery;
 } );
 
 
-$(document).ready(() => {
-
-  // These are the default settings
-  const solverSettings = {
-    disks: 5,
-    start: 'L',
-    target: 'R',
-    transitions: true 
-  };
-
-  // spare stack is the remaining stack
-  solverSettings.spare = getSpare(solverSettings);
-
-  console.log(solverSettings);
-
-  const solver = new HanoiSolver(solverSettings)
-    .generateDisks()
-    .firstRender();
-
-
-  while(solver.moves < solver.targetMoves) {
-    solver.move();
-  }
-
-});
-
-function getSpare({start, target}) {
-  const options = ['L','C','R'];
-  const selected = [start, target];
-  return options.filter((v) => selected.indexOf(v) !== 0)[0];
-}
-
+const towerPositions = ['L','C','R'];
 const measureLeft = {
   'R': 78.5,
   'L': 21.5,
   'C': 50
 };
 
+$(document).ready(() => {
+
+  let solve = false;
+  let solver;
+  let solverSettings = {};
+
+  setUp();
+
+  $('#transitions').click((evt) => {
+    const self = $(evt.target);
+
+    if (self.attr('value') === 'true') { 
+      self.attr('value', 'false');
+      $('.block').removeClass('transition');
+    } else {
+      self.attr('value', 'true');
+      $('.block').addClass('transition');
+    }
+
+    solver.transitions = self.attr('value') === 'true';
+  }); 
+
+  $('#reset').click(() => {
+    solve = false;
+    // reset board and pause
+    setUp();
+  });
+  
+  $('#start').click((evt) => {
+    const self = $(evt.target);
+    console.log(self);
+    
+    if(solve) {
+      solve = false;
+      if (solver.movesTaken !== 0) {
+        self.text('Continue');
+      } else {
+        self.text('Solve');
+      }
+    } else {
+
+      if (solver.movesTaken === 0) {
+        let currentSettings = getSettings();
+
+        // if settings have changed redo setup
+        if (!deepEquals(currentSettings, solverSettings)) {
+          setUp();
+        }
+      } else {
+        self.text('Pause');
+      }
+
+      solve = true;
+      runSolver();
+    }
+  });
+    
+  function getSettings() {
+    let settings = {
+      disks: parseInt($('#blockCount').val()),
+      start: $('#startStack').val(),
+      target: $('#targetStack').val(),
+      transitions: $('#transitions').attr('value') === 'true',
+      smallest: 0
+    };
+
+    settings.spare = getSpare(settings);
+
+    return settings;
+  }
+
+  function setUp() {
+    
+    solverSettings = getSettings();
+    let validSettings = true;
+    
+    // Data validations here
+
+    if(validSettings) {
+
+      if (solver) {
+        // remove disks
+        $('.block').remove();
+        $('#start').text('Solve');
+      }
+        
+      // set up new solver
+      solver = new HanoiSolver(solverSettings)
+        .generateDisks()
+        .firstRender()
+        .generateMoves();
+    
+    } else {
+
+      // display toast asking for valid Settings
+
+    }
+  }
+  
+  function runSolver() {
+    const timeout = solver.transitions ? 1500 : 300;
+    
+    if(solve) {
+      solver.moveDisk(solver.queue.shift());
+      setTimeout(() => {
+        runSolver();
+        solver.movesTaken++;
+      }, timeout);
+    }
+  }
+});
+
+function deepEquals(a, b) {
+  if (a === b) return true;
+  
+  const arrA = Array.isArray(a);
+  const arrB = Array.isArray(b);
+  let i;
+
+  if (arrA && arrB) {
+    if (a.length !== b.length) return false;
+    for (i = 0; i < a.length; i++)
+      if (!deepEquals(a[i], b[i])) return false;
+    return true;
+  }
+
+  if (arrA !== arrB) return false;
+
+  if (a && b && typeof a === 'object' && typeof b === 'object') {
+    const keys = Object.keys(a);
+    if (keys.length !== Object.keys(b).length) return false;
+
+    const dateA = a instanceof Date;
+    const dateB = b instanceof Date;
+    if (dateA && dateB) return a.getTime() === b.getTime();
+    if (dateA !== dateB) return false;
+
+    const regexpA = a instanceof RegExp;
+    const regexpB = b instanceof RegExp;
+    if (regexpA && regexpB) return a.toString() === b.toString();
+    if (regexpA !== regexpB) return false;
+
+    for (i = 0; i < keys.length; i++)
+      if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false;
+
+    for (i = 0; i < keys.length; i++)
+      if(!deepEquals(a[keys[i]], b[keys[i]])) return false;
+
+    return true;
+  }
+
+  return false;
+}
+
+function getSpare({start, target}) {
+  const selected = [start, target];
+  return towerPositions.filter((v) => selected.indexOf(v) === -1)[0];
+}
+
 /**
  * 
- * @param {String} target 
- * @param {String} start 
- * @param {String} spare 
- * @param {Number} disks
- * @param {Boolean} transitions
+ * @param {object} solverSettings
  * @return {HanoiSolver} 
  */
 function HanoiSolver({target, start, spare, disks, transitions}) {
   this.disks = disks;
   this.transitions = transitions;
   this.moves = 0;
+  this.movesTaken = 0;
   this.queue = [];
   this.targetMoves = Math.pow(2, disks) - 1;
   this.complete = false;
@@ -10454,9 +10579,15 @@ HanoiSolver.prototype.firstRender = function() {
 
   return this;
 };
+HanoiSolver.prototype.generateMoves = function() {
+  while(this.moves < this.targetMoves) {
+    this.move();
+  }
+
+  return this;
+};
 HanoiSolver.prototype.move = function() {
-  
-  const timeout = 1500;
+
   const tN = notSmallest(this.smallest);
 
   if (this.moves === 0) {
@@ -10479,10 +10610,8 @@ HanoiSolver.prototype.move = function() {
     // move disk in memory
     tower.unshift(disk);  
     
-    // move on screen.
-    setTimeout(() => {
-      this.moveDisk(disk.id, left, bottom);
-    }, timeout * this.moves);
+    // add move to queue
+    this.queue.push(new Move(disk.id, left, bottom));
 
   } else if (isEven(this.moves)) {
 
@@ -10512,10 +10641,8 @@ HanoiSolver.prototype.move = function() {
     // move disk in memory
     toTower.unshift(disk);  
     
-    // move on screen.
-    setTimeout(() => {
-      this.moveDisk(disk.id, left, bottom);
-    }, timeout * this.moves);
+    // add move to queue
+    this.queue.push(new Move(disk.id, left, bottom));
 
   } else {
     // move next smallest available disk
@@ -10523,7 +10650,6 @@ HanoiSolver.prototype.move = function() {
     let toTower;
 
     // define fromTower and toTower
-
     // check if both towers have disks 
     if ( this.towers[tN[0]].pile.length > 0 && 
          this.towers[tN[1]].pile.length > 0
@@ -10562,26 +10688,35 @@ HanoiSolver.prototype.move = function() {
     // move disk in memory
     toTower.unshift(disk);  
     
-    // move on screen.
-    setTimeout(() => {
-      this.moveDisk(disk.id, left, bottom);
-    }, timeout * this.moves);
-  }
+    // add move to queue
+    this.queue.push(new Move(disk.id, left, bottom));
 
+  }
   // increment moves total
   this.moves++;
 };
-HanoiSolver.prototype.moveDisk = function(id, left, bottom) {
+HanoiSolver.prototype.moveDisk = function({id, left, bottom}) {
   
   const disk = $(`#${id}`);
 
-  const timeout = 500;
+  if(this.transitions) {
+    const timeout = 500;
+    const moves = [lift, slide, place];
+    
+    moves.forEach((fn, i) => {
+      setTimeout( () => { fn(); }, i * timeout);
+    });
 
-  const moves = [lift, slide, place];
+  } else {
+    transport();
+  }
 
-  moves.forEach((fn, i) => {
-    setTimeout( () => { fn(); }, i * timeout);
-  });
+  this.movesTaken++;
+
+  function transport() {
+    disk.css('bottom', `${bottom}%`);
+    disk.css('left', `${left}%`);
+  }
 
   function lift() {
     disk.css('bottom', '80%');
@@ -10595,10 +10730,6 @@ HanoiSolver.prototype.moveDisk = function(id, left, bottom) {
     disk.css('bottom', `${bottom}%`);
   }
 };
-
-function notSmallest(n) {
-  return [0,1,2].filter((v) => v !== n);
-}
 
 function Stack(position) {
   this.left = measureLeft[position];
@@ -10642,7 +10773,7 @@ function Disk(left, bottom, width, height, n, transitions) {
 function generateBlock(left, bottom, width, height, id, transitions) {
   const { red, green, blue } = randomColor();
   return `<div id="${id}" ` + 
-              `class="block ${transitions ? 'transition': ''}" ` + 
+              `class="block ${transitions ? 'transition' : ''}" ` + 
               `style=` + 
                 `"bottom: ${bottom}%; ` + 
                  `left: ${left}%; ` +
@@ -10651,6 +10782,16 @@ function generateBlock(left, bottom, width, height, id, transitions) {
                  `background-color: rgb(${red}, ${green}, ${blue});` +
                 `"` +
          `</div>`;
+}
+
+function Move(id, left, bottom) {
+  this.id = id;
+  this.left = left;
+  this.bottom = bottom;
+}
+
+function notSmallest(n) {
+  return [0,1,2].filter((v) => v !== n);
 }
 
 function randomColor() {
