@@ -3,23 +3,35 @@
 
 $(document).ready(() => {
 
-  const disks = 3;
-  const start = 'C';
-  const target = 'L';
+  // These are the default settings
+  const solverSettings = {
+    disks: 5,
+    start: 'L',
+    target: 'R',
+    transitions: true 
+  };
 
-  // spare stack iss the remaining stack need to figure this out
-  const spare = 'R';
-  const transitions = true;
+  // spare stack is the remaining stack
+  solverSettings.spare = getSpare(solverSettings);
 
-  const solver = new HanoiSolver(target, start, spare, disks, transitions)
+  console.log(solverSettings);
+
+  const solver = new HanoiSolver(solverSettings)
     .generateDisks()
     .firstRender();
+
 
   while(solver.moves < solver.targetMoves) {
     solver.move();
   }
 
 });
+
+function getSpare({start, target}) {
+  const options = ['L','C','R'];
+  const selected = [start, target];
+  return options.filter((v) => selected.indexOf(v) !== 0)[0];
+}
 
 const measureLeft = {
   'R': 78.5,
@@ -33,9 +45,10 @@ const measureLeft = {
  * @param {String} start 
  * @param {String} spare 
  * @param {Number} disks
+ * @param {Boolean} transitions
  * @return {HanoiSolver} 
  */
-function HanoiSolver(target, start, spare, disks, transitions) {
+function HanoiSolver({target, start, spare, disks, transitions}) {
   this.disks = disks;
   this.transitions = transitions;
   this.moves = 0;
