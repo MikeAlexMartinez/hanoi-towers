@@ -10420,10 +10420,11 @@ $(document).ready(() => {
         if (!deepEquals(currentSettings, solverSettings)) {
           setUp();
         }
-      } else {
-        self.text('Pause');
-      }
 
+        
+      }
+      
+      self.text('Pause');
       solve = true;
       runSolver();
     }
@@ -10484,35 +10485,16 @@ $(document).ready(() => {
   }
 });
 
+
+// Amended from fast-deep-equal. The input is less complex
+// So Dates, Regex, and array comparisons weren't required.
 function deepEquals(a, b) {
   if (a === b) return true;
-  
-  const arrA = Array.isArray(a);
-  const arrB = Array.isArray(b);
   let i;
-
-  if (arrA && arrB) {
-    if (a.length !== b.length) return false;
-    for (i = 0; i < a.length; i++)
-      if (!deepEquals(a[i], b[i])) return false;
-    return true;
-  }
-
-  if (arrA !== arrB) return false;
 
   if (a && b && typeof a === 'object' && typeof b === 'object') {
     const keys = Object.keys(a);
     if (keys.length !== Object.keys(b).length) return false;
-
-    const dateA = a instanceof Date;
-    const dateB = b instanceof Date;
-    if (dateA && dateB) return a.getTime() === b.getTime();
-    if (dateA !== dateB) return false;
-
-    const regexpA = a instanceof RegExp;
-    const regexpB = b instanceof RegExp;
-    if (regexpA && regexpB) return a.toString() === b.toString();
-    if (regexpA !== regexpB) return false;
 
     for (i = 0; i < keys.length; i++)
       if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false;
@@ -10526,13 +10508,18 @@ function deepEquals(a, b) {
   return false;
 }
 
+/**
+ * This function figures out which tower is the spare tower
+ * @param {object} params
+ * @return {number}
+ */
 function getSpare({start, target}) {
   const selected = [start, target];
   return towerPositions.filter((v) => selected.indexOf(v) === -1)[0];
 }
 
 /**
- * 
+ * This function instantiates a new instance of a HanoiSolver
  * @param {object} solverSettings
  * @return {HanoiSolver} 
  */
@@ -10552,6 +10539,12 @@ function HanoiSolver({target, start, spare, disks, transitions}) {
   this.smallest = 0; // keeps track of which tower smallest disk is on 
   this.heightDiff = 50 / disks;
 }
+/**
+ * Using the parameters used when creating the constructor, this function
+ * generates the necessary disks calculating each disks width height and 
+ * position on the board.
+ * @return {HanoiSolver}
+ */
 HanoiSolver.prototype.generateDisks = function() {
   const startTower = this.towers[0];
   const start = 65;
@@ -10568,6 +10561,11 @@ HanoiSolver.prototype.generateDisks = function() {
 
   return this;
 };
+/**
+ * Once all the disks have been created and allocated to the relevant tower or 'stack'
+ * this function adds the disk to the DOM
+ * @return {this}
+ */
 HanoiSolver.prototype.firstRender = function() {
   const startTower = this.towers[0];
   const pile = startTower.pile;
@@ -10579,6 +10577,11 @@ HanoiSolver.prototype.firstRender = function() {
 
   return this;
 };
+/**
+ * Once the HanoiSolver us properly instantiated with disks this function
+ * generates the moves required to solve the puzzle in the minimum moves possible.
+ * @return {this}
+ */
 HanoiSolver.prototype.generateMoves = function() {
   while(this.moves < this.targetMoves) {
     this.move();
@@ -10586,6 +10589,13 @@ HanoiSolver.prototype.generateMoves = function() {
 
   return this;
 };
+/**
+ * This function contains the core logic of the Hanoi solver and determines
+ * which disk should move to which tower based on the locations of the disks 
+ * so far and the number of moves that have been made thus far. The moves are 
+ * added to the HanoiSolver's queue which is managed using the controls in the
+ * control panel.
+ */
 HanoiSolver.prototype.move = function() {
 
   const tN = notSmallest(this.smallest);
@@ -10695,10 +10705,19 @@ HanoiSolver.prototype.move = function() {
   // increment moves total
   this.moves++;
 };
+/**
+ * 
+ * @param {string} id - the css id of the disk to be moves
+ * @param {number} left - defines the left end position of the disk being moved
+ * @param {number} bottom - defines the bottom end position of the disk being moved
+ * @return {null}; 
+ */
 HanoiSolver.prototype.moveDisk = function({id, left, bottom}) {
   
   const disk = $(`#${id}`);
 
+  // If the animations button is on use the more elaborate
+  // moves and transitions
   if(this.transitions) {
     const timeout = 500;
     const moves = [lift, slide, place];
@@ -10708,12 +10727,13 @@ HanoiSolver.prototype.moveDisk = function({id, left, bottom}) {
     });
 
   } else {
-    transport();
+    // otherwise teleport that disk!
+    teleport();
   }
 
   this.movesTaken++;
 
-  function transport() {
+  function teleport() {
     disk.css('bottom', `${bottom}%`);
     disk.css('left', `${left}%`);
   }
@@ -10731,6 +10751,11 @@ HanoiSolver.prototype.moveDisk = function({id, left, bottom}) {
   }
 };
 
+/**
+ * This function instantiates a stack. the stack is responsible for storing the disks
+ * @param {string} position - one of the three defined positions, 'L', 'C' or 'R'
+ * @return {this}
+ */
 function Stack(position) {
   this.left = measureLeft[position];
   this.height = 15;
@@ -10738,6 +10763,9 @@ function Stack(position) {
   this.position = position;
   this.pile = [];
 }
+/**
+ * This functions removes the disk from the top of the stack
+ */
 Stack.prototype.shift = function() {
   const disk = this.pile.shift();
   this.height -= disk.height;
@@ -10750,6 +10778,10 @@ Stack.prototype.shift = function() {
 
   return disk;
 };
+/**
+ * This function takes a disk and adds it to the top of the stack
+ * @param {Disk} disk 
+ */
 Stack.prototype.unshift = function(disk) {
   this.pile.unshift(disk);
   this.height += disk.height;
@@ -10757,6 +10789,16 @@ Stack.prototype.unshift = function(disk) {
   return this;
 };
 
+/**
+ * This function instantiates a disk with the defined proportions.
+ * @param {number} left 
+ * @param {number} bottom 
+ * @param {number} width 
+ * @param {number} height 
+ * @param {number} n 
+ * @param {boolean} transitions
+ * @return {this} 
+ */
 function Disk(left, bottom, width, height, n, transitions) {
   this.oddOrEven = `${n % 2 === 0 ? 'even' : 'odd'}`;
   this.left = left;
@@ -10766,9 +10808,8 @@ function Disk(left, bottom, width, height, n, transitions) {
   this.id = `block-${n}`;
   this.html = generateBlock(left, bottom, width, height, `block-${n}`, transitions);
 }
-
 /**
- * 
+ * This function generates the html that will be added to the DOM
  */
 function generateBlock(left, bottom, width, height, id, transitions) {
   const { red, green, blue } = randomColor();
@@ -10784,12 +10825,24 @@ function generateBlock(left, bottom, width, height, id, transitions) {
          `</div>`;
 }
 
+/**
+ * This instantiates a Move object which are the instructions which
+ * will be added to the queue and will control the movement of
+ * the disks on the screen
+ * @param {string} id 
+ * @param {number} left 
+ * @param {number} bottom 
+ */
 function Move(id, left, bottom) {
   this.id = id;
   this.left = left;
   this.bottom = bottom;
 }
 
+/**
+ * Helper function to define which stacks  
+ * @param {number} n 
+ */
 function notSmallest(n) {
   return [0,1,2].filter((v) => v !== n);
 }
