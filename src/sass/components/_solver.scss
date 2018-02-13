@@ -47,9 +47,10 @@ $text-submit-warning: #322C0A;
   max-width: 1000px;
   min-height: 400px;
   background-color: $board_color;
+  box-shadow: 3px 3px 6px 0 rgba(0,0,0,0.2);
 
   position: absolute;
-  top: 170px;
+  top: 140px;
   bottom: 0;
   left: 0;
   right: 0;
@@ -63,7 +64,6 @@ $text-submit-warning: #322C0A;
   position: relative;
   height: 100%;
   width: 100%;
-  box-shadow: 3px 3px 6px 0 rgba(0,0,0,0.2);
 
   .score {
     font-size: 20px;
@@ -134,7 +134,7 @@ $text-submit-warning: #322C0A;
   box-shadow: 3px 3px 6px 0 rgba(0,0,0,0.2);
 
   position: absolute;
-  top: 30px;
+  top: 10px;
   left: 0;
   right: 0;
 
