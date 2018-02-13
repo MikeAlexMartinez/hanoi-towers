@@ -1,14 +1,36 @@
 // Checkbox styling inspired : https://paulund.co.uk/style-checkboxes-with-css
 
-$bg-black: rgb(34, 33, 33);
+$bg-black: #222121;
 $bg-grey: #665F56;
+
+$bg-btn: #9E9E9E;
+$bg-btn-disabled:#868181;
+$bg-btn-hover: #757575;
+$bg-btn-shadow: #323232;
+
 $board_color: #e6eaf2;
+$white: #fff;
+$font-disabled: #ccc;
 $main-font: Arial, Helvetica, sans-serif;
 $main-font-weight: 400;
+$text-input-focus: #EEE051;
+
+$bg-submit-success: #8EF6BB;
+$bg-submit-success-outer: #d9f9e7;
+$text-submit-success: #0A321C;
+
+$bg-submit-error: #F68E8E;
+$bg-submit-error-outer: #f7bebe;
+$text-submit-error: #320A0A;
+
+$bg-submit-warning: #f6c08d;
+$bg-submit-warning-outer: #ffe3c9;
+$text-submit-warning: #322C0A;
+
 
 .whiteOnBlack {
-  background-color: #100E0E;
-  color: #fff;
+  background-color: $white;
+  color: $bg-black;
 }
 
 .inputStyle {
@@ -16,11 +38,6 @@ $main-font-weight: 400;
   padding: 5px 10px;
   border-radius: 5px;
   border: none;
-}
-
-.body {
-  width: 100vh;
-  height: 100vh;
 }
 
 .solverContainer {
@@ -36,6 +53,8 @@ $main-font-weight: 400;
   bottom: 0;
   left: 0;
   right: 0;
+
+  overflow: hidden;
 
   margin: auto;
 }
@@ -78,6 +97,9 @@ $main-font-weight: 400;
     bottom: 10%;
     border-radius: 10px;
     background-color: $bg-grey;
+
+    color: $white;
+    padding: 1%;
   }
   #stickOne {
     left: 20%;
@@ -105,7 +127,7 @@ $main-font-weight: 400;
   font-size: 25px;
   font-family: $main-font;
   font-weight: $main-font-weight;
-  
+  color: #fff;
   width: 1000px;
   height: 120px;
   background-color: $bg-grey;
@@ -133,21 +155,32 @@ $main-font-weight: 400;
 
     .textInput {
       padding: 2.5px;
-      margin-left: 5px;
+      margin-left: 10px;
       width: 45px;
       text-align: center;
       @extend .inputStyle;
+
+      box-shadow: inset 0px 0px 3px 2px rgba(0,0,0,0.2);
+    
+      &:focus {
+        box-shadow: 0 0 4px 2px $text-input-focus;
+        border: 2px solid $text-input-focus;
+      }
     }
 
     .btn {
       font-size: 20px;
-      margin-right: 10px; 
-      @extend .inputStyle;
+      margin-right: 10px;
+    }
+
+    .inputs label {
+      color: $board_color;
     }
 
     .checkboxText {
       display: inline-block;
       margin: none;
+      color: $board_color;
     }
     input[type=checkbox] {
       visibility: hidden;
@@ -214,6 +247,102 @@ $main-font-weight: 400;
       background: #26ca28;
     }
 
+  }
+}
+
+.clicky {
+  position: relative;
+  overflow: hidden;
+  top: 0;
+  margin-top: 0;
+  margin-bottom: 5px;
+  padding: 5px 10px;
+  min-width: 100px;
+  @extend .whiteOnBlack;
+
+  /** 3D Block Effect **/
+  box-shadow: 0 6px 0 0 $bg-btn-shadow;
+  
+  /** Make it look pretty **/
+  display: inline-block;
+  border: 0;
+  cursor: pointer;
+  opacity: 0.9;
+  border-radius: 5px;
+
+  &:active {
+    /** Remove 3D Block Effect on Click **/
+    box-shadow: none;
+    top: 5px;
+    margin-top: 5px;
+    margin-bottom: 0;
+  }
+    
+  &:hover {
+    opacity: 1;
+  }
+    
+  .clicky:active,
+  .clicky:focus {
+    /** Remove Chrome's Ugly Yellow Outline **/
+    outline: 0;
+  }
+
+  &:disabled {
+    /** Remove 3D Block Effect on Click **/
+    box-shadow: none;
+    top: 5px;
+    margin-top: 5px;
+    margin-bottom: 0;
+
+    background: $bg-btn-disabled;
+    color: $font-disabled;
+  }
+}
+
+#solverToast {
+  position: absolute;
+  width: 80%;
+  left: 10%;
+  border-radius: 5px;
+
+  z-index: 2;
+
+  text-align: center;
+  
+  top: -30%;
+  opacity: 0;
+
+  transition: top 0.5s ease-in-out, opacity 0.5s linear;
+
+  p {
+    margin: 10px;
+  }
+
+  &.active {
+    
+    
+    transition: top 0.5s ease-in-out, opacity 0.5s linear;
+    
+    top: 5%;
+    opacity: 1;
+
+    box-shadow: 0px 0px 10px 5px rgba(0,0,0,0.3);
+  }
+
+  &.success {
+    color: $text-submit-success;
+    background-color: $bg-submit-success;
+  }
+
+  &.error {
+    color: $text-submit-error;
+    background-color: $bg-submit-error;
+  }
+
+  &.warning {
+    color: $text-submit-warning;
+    background-color: $bg-submit-warning;
   }
 }
 

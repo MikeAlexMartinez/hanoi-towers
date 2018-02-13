@@ -13,6 +13,7 @@ $(document).ready(() => {
   let solve = false;
   let solver;
   let solverSettings = {};
+  let errorsPresent = false;
 
   setUp();
 
@@ -32,45 +33,48 @@ $(document).ready(() => {
 
   $('#reset').click(() => {
     solve = false;
+    $('#reset').attr('disabled', true);
     // reset board and pause
     setUp();
   });
   
   $('#start').click((evt) => {
     const self = $(evt.target);
-    console.log(self);
     
-    if(solve) {
-      solve = false;
-      if (solver.movesTaken !== 0) {
-        self.text('Continue');
-      } else {
-        self.text('Solve');
-      }
-    } else {
-
-      if (solver.movesTaken === 0) {
-        let currentSettings = getSettings();
-
-        // if settings have changed redo setup
-        if (!deepEquals(currentSettings, solverSettings)) {
-          setUp();
+    if (!errorsPresent) {
+      if(solve) {
+        solve = false;
+        if (solver.movesTaken !== 0) {
+          self.text('Continue');
+        } else {
+          self.text('Solve');
         }
-
+      } else {
         
+        if (solver.movesTaken === 0) {
+          let currentSettings = getSettings();
+          
+          // if settings have changed redo setup
+          if (!deepEquals(currentSettings, solverSettings)) {
+            setUp();
+          }
+        }
+        
+        self.text('Pause');
+        solve = true;
+        
+        if (!errorsPresent) {
+          runSolver();
+        }
       }
-      
-      self.text('Pause');
-      solve = true;
-      runSolver();
     }
   });
     
   function getSettings() {
     let settings = {
       disks: parseInt($('#blockCount').val()),
-      start: $('#startStack').val(),
-      target: $('#targetStack').val(),
+      start: $('#startStack').val().toUpperCase(),
+      target: $('#targetStack').val().toUpperCase(),
       transitions: $('#transitions').attr('value') === 'true',
       smallest: 0
     };
@@ -80,12 +84,57 @@ $(document).ready(() => {
     return settings;
   }
 
+  // This functiion runs the set up, regenerates the solver
+  // and resets the UI
   function setUp() {
     
     solverSettings = getSettings();
     let validSettings = true;
     
+    const errors = [];
+
     // Data validations here
+    // Check disks is between 5 and 10 inclusive.
+    if (typeof solverSettings.disks !== 'number') {
+      errors.push('Please provide a number for the Disks entry between 5 & 10, inclusive.')
+    } else {
+      if (solverSettings.disks > 10 || 
+        solverSettings.disks < 5 
+      ) {
+        errors.push('Please provide a disk number between 5 & 10, inclusive');
+      }
+    }
+
+    // check Start is L R or C
+    if (typeof solverSettings.start !== 'string' || 
+      towerPositions.indexOf(solverSettings.start) === -1
+    ) {
+      errors.push('Please provide a Start tower with the letters \'L\', \'C\' or \'R\'');
+    }
+
+    // check Target is L R or C
+    if (typeof solverSettings.target !== 'string' || 
+      towerPositions.indexOf(solverSettings.target) === -1
+    ) {
+      errors.push('Please provide a Target tower with the letters \'L\', \'C\' or \'R\'');
+    }
+
+    //Check start and target are different
+    if (solverSettings.target === solverSettings.start) {
+      errors.push('Please provide different values for the \'start\' and \'target\' towers');
+    }
+
+    if (errors.length > 0) {
+      validSettings = false;
+      errorsPresent = true;
+      $('#start').attr('disabled', true);
+      $('#reset').removeAttr('disabled');
+    } else {
+      errorsPresent = false;
+      $('#start').removeAttr('disabled');
+    }
+
+    const toast = $('#solverToast');
 
     if(validSettings) {
 
@@ -102,9 +151,24 @@ $(document).ready(() => {
         .generateMoves();
     
     } else {
+      
+      let errorHtml = '';
+      errors.forEach((v) => {
+        errorHtml += `<p>${v}</p>`;
+      });
+
+      toast.html(errorHtml);
 
       // display toast asking for valid Settings
+      toast.addClass('active error');
 
+      setTimeout(() => {
+        toast.removeClass('active');
+        setTimeout(() => {
+          toast.removeClass('error');
+          toast.empty();
+        }, 500);
+      }, 2000);
     }
   }
   
@@ -113,14 +177,15 @@ $(document).ready(() => {
     
     if(solve) {
       solver.moveDisk(solver.queue.shift());
+      $('#totalScore').text(solver.movesTaken);
+      $('#reset').removeAttr('disabled');
       setTimeout(() => {
         runSolver();
-        solver.movesTaken++;
       }, timeout);
     }
   }
-});
 
+});
 
 // Amended from fast-deep-equal. The input is less complex
 // So Dates, Regex, and array comparisons weren't required.
@@ -207,6 +272,10 @@ HanoiSolver.prototype.firstRender = function() {
   const pile = startTower.pile;
   const board = $('.board');
 
+  // update target moves
+  $('#targetScore').text(this.targetMoves);
+
+  // add disks to UI
   pile.forEach((disk) => {
     board.append(disk.html);
   });
@@ -223,12 +292,44 @@ HanoiSolver.prototype.generateMoves = function() {
     this.move();
   }
 
+  const correctConfiguration = this.validate();
+
+  if (!correctConfiguration) {
+    console.log('Incorrect Moves Generated!');
+  } else {
+    console.log('Complete');
+  }
+
   return this;
+};
+/**
+ * Validates results
+ * @return {boolean}
+ */
+HanoiSolver.prototype.validate = function() {
+
+  const [startStack, spareStack, targetStack] = this.towers;
+
+  // No disks present in other stacks
+  if (startStack.pile.length > 0) return false;
+  if (spareStack.pile.length > 0) return false;
+
+  // All disks are in correct stack
+  if (targetStack.pile.length !== this.disks) return false;
+
+  // Disks are stacked from the smallest to widest
+  const disks = targetStack.pile;
+
+  for(let i = 1; i < disks.length; i++) {
+    if (disks[i].width <= disks[i-1].width) return false;
+  }
+
+  return true;
 };
 /**
  * This function contains the core logic of the Hanoi solver and determines
  * which disk should move to which tower based on the locations of the disks 
- * so far and the number of moves that have been made thus far. The moves are 
+ * and the number of moves that have been made thus far. The moves are 
  * added to the HanoiSolver's queue which is managed using the controls in the
  * control panel.
  */
