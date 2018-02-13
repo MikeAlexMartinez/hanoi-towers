@@ -65,6 +65,15 @@ $text-submit-warning: #322C0A;
   height: 100%;
   width: 100%;
 
+  .title {
+    font-size: 20px;
+    font-weight: 600;
+    text-align: left;
+    position: absolute;
+    top: 5%;
+    left: 5%;
+  }
+
   .score {
     font-size: 20px;
     font-weight: $main-font-weight;
